@@ -1,23 +1,23 @@
-import {CreateCompletionRequest} from 'openai'
-enum ChromeEvents{
-    ACTION_SELECTED_TEXT = "ACTION_SELECTED_TEXT", 
+import { Method } from "axios";
+enum ChromeEvents {
+  ACTION_SELECTED_TEXT = "ACTION_SELECTED_TEXT",
+  ACTION_ONSCROLL = "ACTION_ONSCROLL",
 }
-enum ChromeStorage{
-    OPENAI_API = "OPENAI_API",
-    OPENAI_CONFIGS="OPENAI_CONFIGS"
+enum ChromeStorage {
+  OPENAI_API = "OPENAI_API",
+  OPENAI_CONFIGS = "OPENAI_CONFIGS",
 }
-enum OpenAIModeName{
-    ANALYSE_SELECTED_TEXT="ANALYSE_SELECTED_TEXT"
+enum OpenAIModeName {
+  ANALYSE_SELECTED_TEXT = "ANALYSE_SELECTED_TEXT",
+  TEXT_TO_IMAGE = "TEXT_TO_IMAGE",
 }
 type OpenAIConfig = {
-    id : number;
-    name : string;
-    isDefault ?:boolean;
-    config : Record<string,any>;
-}
-type OpenAIMode = {
-    value : OpenAIModeName,
-     name : string
-}
+  id: number;
+  name: string;
+  isDefault?: boolean;
+  config: Record<string, any>;
+  url: string;
+  method?: Method | "POST";
+};
 
-export {ChromeEvents, ChromeStorage, OpenAIConfig, OpenAIMode, OpenAIModeName}
+export { ChromeEvents, ChromeStorage, OpenAIConfig, OpenAIModeName };
