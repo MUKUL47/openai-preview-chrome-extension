@@ -1,5 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ChromeEvents, OpenAIConfig } from "../../types";
+import React, { useEffect, useState } from "react";
+import { OpenAIConfig } from "../../types";
+import PopupService from "../popup.service";
+import LoadingComponent from "../shared-components/loading-component";
 import { OpenAIUtil } from "../utils";
 interface Props
   extends React.DetailedHTMLProps<
@@ -8,8 +10,7 @@ interface Props
   > {
   config: OpenAIConfig;
 }
-export default function TranscriptText({ config }: Props) {
-  const contextRef = useRef<HTMLInputElement>(null);
+export default function TextToImage({ config }: Props) {
   const [openAIResponse, setOpenAIResponse] = useState<{
     error?: string;
     response?: any;
@@ -19,21 +20,15 @@ export default function TranscriptText({ config }: Props) {
     chrome.runtime.onMessage.addListener(onChromeEvent);
     return () => chrome.runtime.onMessage.removeListener(onChromeEvent);
   }, []);
-  const onChromeEvent = (
-    message: Partial<{ action: ChromeEvents; data: any }>
-  ) => {
-    // if (message?.action !== ChromeEvents.ACTION_ONSCROLL) return;
-    analyseText(message.data);
+  const onChromeEvent = (message: Partial<{ action: string; data: any }>) => {
+    if (message.action !== PopupService.getPopupChromeEventId()) return;
+    analyse(message.data);
   };
 
-  async function analyseText(s: string) {
+  async function analyse(s: string) {
     if (typeof s !== "string" || !!!s) {
-      setOpenAIResponse(() => {
-        return { error: "No text selected..." };
-      });
-      return;
+      return setOpenAIResponse({ error: "No text selected..." });
     }
-
     try {
       const completionConfig = OpenAIUtil.defaultConfigs[0];
       completionConfig.config.prompt = `Summarize in less than 10 words\n"${s}"`;
@@ -44,28 +39,19 @@ export default function TranscriptText({ config }: Props) {
       const response = await OpenAIUtil.getOpenAIAPI<any>(
         OpenAIUtil.getAxiosConfig(config)
       );
-      if (response) {
-        setOpenAIResponse(() => {
-          return { response: response?.data || [] };
-        });
-      } else {
-        setOpenAIResponse(() => {
-          return { error: "No response detected..." };
-        });
-      }
+      setOpenAIResponse(
+        (response && { response: response?.data || [] }) || {
+          error: "No response detected...",
+        }
+      );
       setLoading(false);
     } catch (e) {
-      setOpenAIResponse(() => {
-        return { error: "No response or error detected..." };
-      });
       setLoading(false);
+      setOpenAIResponse({ error: "No response or error detected..." });
     }
   }
   async function onAnalyse() {
     try {
-      setOpenAIResponse(() => {
-        return { response: "<p class='text-center'>Loading...</p>" };
-      });
       setLoading(true);
       const tabs = await chrome.tabs.query({
         active: true,
@@ -80,7 +66,7 @@ export default function TranscriptText({ config }: Props) {
               data: document.getSelection()?.toString(),
             });
           },
-          args: [ChromeEvents.ACTION_ONSCROLL],
+          args: [PopupService.getPopupChromeEventId()],
         });
       }
     } catch (e) {
@@ -88,20 +74,21 @@ export default function TranscriptText({ config }: Props) {
     }
   }
   return (
-    <>
-      <button onClick={onAnalyse}>Convert text to image</button>
-      {openAIResponse.error && (
-        <p className="text-red-700 text-center">
-          <strong>{openAIResponse.error}</strong>
-        </p>
-      )}
-      {(openAIResponse.response &&
-        typeof openAIResponse.response === "object" &&
-        openAIResponse.response?.data?.map((v: any) => {
-          return <img src={v.url} />;
-        })) ||
-        openAIResponse.response}
-      <p></p>
-    </>
+    <LoadingComponent isLoading={isLoading}>
+      <div className="flex flex-col gap-2">
+        <button onClick={onAnalyse}>Convert text to image</button>
+        {openAIResponse.error && (
+          <p className="text-red-700 text-center">
+            <strong>{openAIResponse.error}</strong>
+          </p>
+        )}
+        {(openAIResponse.response &&
+          typeof openAIResponse.response === "object" &&
+          openAIResponse.response?.data?.map((v: any) => {
+            return <img src={v.url} className="w-full" />;
+          })) ||
+          openAIResponse.response}
+      </div>
+    </LoadingComponent>
   );
 }

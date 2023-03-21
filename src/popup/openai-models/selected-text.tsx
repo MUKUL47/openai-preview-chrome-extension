@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ChromeEvents, OpenAIConfig } from "../../types";
+import { OpenAIConfig } from "../../types";
+import PopupService from "../popup.service";
 import { OpenAIUtil, Util } from "../utils";
 interface Props
   extends React.DetailedHTMLProps<
@@ -17,40 +18,14 @@ function SelectedText({ config }: Props) {
   const [isLoading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     chrome.runtime.onMessage.addListener(onChromeEvent);
-    // chrome.tabCapture.capture(
-    //   { audio: true, video: false },
-    //   function (stream: any) {
-    //     var audioContext = new AudioContext();
-
-    //     // Create a new MediaStreamAudioSourceNode and connect it to the stream
-    //     var source = audioContext.createMediaStreamSource(stream);
-
-    //     // Create a new AnalyserNode to analyze the audio data
-    //     var analyser = audioContext.createAnalyser();
-    //     analyser.fftSize = 2048;
-
-    //     // Connect the source to the analyser and the analyser to the destination
-    //     source.connect(analyser);
-    //     analyser.connect(audioContext.destination);
-
-    //     // Get the frequency data from the analyser and log it to the console
-    //     var frequencyData = new Uint8Array(analyser.frequencyBinCount);
-    //     setInterval(function () {
-    //       analyser.getByteFrequencyData(frequencyData);
-    //       console.log(frequencyData);
-    //     }, 1000);
-    //   }
-    // );
     return () => chrome.runtime.onMessage.removeListener(onChromeEvent);
   }, []);
-  const onChromeEvent = (
-    message: Partial<{ action: ChromeEvents; data: any }>
-  ) => {
-    if (message?.action !== ChromeEvents.ACTION_SELECTED_TEXT) return;
-    analyseText(message.data);
+  const onChromeEvent = (message: Partial<{ action: string; data: any }>) => {
+    if (message.action !== PopupService.getPopupChromeEventId()) return;
+    analyse(message.data);
   };
 
-  async function analyseText(s: string) {
+  async function analyse(s: string) {
     if (typeof s !== "string" || !!!s) {
       setOpenAIResponse(() => {
         return { error: "No text selected..." };
@@ -101,7 +76,7 @@ function SelectedText({ config }: Props) {
               data: document.getSelection()?.toString(),
             });
           },
-          args: [ChromeEvents.ACTION_SELECTED_TEXT],
+          args: [PopupService.getPopupChromeEventId()],
         });
       }
     } catch (e) {

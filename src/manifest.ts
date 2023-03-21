@@ -5,6 +5,9 @@ export default defineManifest({
   description: "",
   version: "0.0.0",
   manifest_version: 3,
+  sandbox: {
+    pages: ["sandbox.html"],
+  },
   icons: {
     "16": "img/logo-16.png",
     "32": "img/logo-34.png",
@@ -46,6 +49,7 @@ export default defineManifest({
     "tabCapture",
     "audioCapture",
     "desktopCapture",
+    "unsafe-eval",
     "scripting",
   ],
 });

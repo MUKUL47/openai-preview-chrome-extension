@@ -1,5 +1,6 @@
-import OpenAIUtil from "./openai.util";
+import ts from "typescript";
 import { ChromeStorageService } from "./chrome-storage.util";
+import OpenAIUtil from "./openai.util";
 
 class Util {
   public static class(
@@ -14,6 +15,20 @@ class Util {
       .split(/_|-| /g)
       .map((s) => `${s[0].toUpperCase()}${s.slice(1).toLowerCase()}`)
       .join(" ");
+  }
+  public static evalulateJS(js: string): any {
+    try {
+      return eval(js);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  public static transpileJSX(jsx: string): string | null {
+    const transpiled = ts.transpileModule(jsx, {
+      compilerOptions: { jsx: ts.JsxEmit.React, strictFunctionTypes: false },
+    });
+    console.log(transpiled);
+    return transpiled?.outputText ? transpiled.outputText : null;
   }
 }
 export { Util, OpenAIUtil, ChromeStorageService };
