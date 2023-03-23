@@ -1,53 +1,11 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { OpenAIConfig, OpenAIModeName } from "../../types";
+import { ChromeStorage, OpenAIConfig } from "../../types";
+import { ChromeStorageService } from "./chrome-storage.util";
+import openAIModes from "./open-ai-modes";
 
 export default class OpenAIUtil {
   private static API_KEY: string = "";
-  public static readonly defaultConfigs: OpenAIConfig[] = [
-    {
-      name: OpenAIModeName.ANALYSE_SELECTED_TEXT,
-      id: -1,
-      isDefault: true,
-      config: {
-        model: "text-davinci-003",
-        temperature: 0.7,
-        max_tokens: 2000,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-      },
-      url: "https://api.openai.com/v1/completions",
-      method: "POST",
-    },
-    {
-      name: OpenAIModeName.TEXT_TO_IMAGE,
-      id: -2,
-      config: {
-        n: 1,
-        size: "256x256",
-      },
-      url: "https://api.openai.com/v1/images/generations",
-      method: "POST",
-    },
-    {
-      name: OpenAIModeName.TRANSCRIPTIONS,
-      id: -3,
-      config: {
-        model: "whisper-1",
-      },
-      url: "https://api.openai.com/v1/audio/transcriptions",
-      method: "POST",
-    },
-    {
-      name: OpenAIModeName.TRANSLATIONS,
-      id: -4,
-      config: {
-        model: "whisper-1",
-      },
-      url: "https://api.openai.com/v1/audio/translations",
-      method: "POST",
-    },
-  ];
+  public static readonly defaultConfigs: OpenAIConfig[] = openAIModes;
   public static getApiKey(): string {
     return this.API_KEY;
   }
@@ -75,5 +33,52 @@ export default class OpenAIUtil {
     axiosConfig: AxiosRequestConfig
   ): Promise<T> {
     return axios(axiosConfig);
+  }
+
+  //
+
+  public static async deleteConfig(id: number): Promise<void> {
+    const configs = await this.getConfigs();
+    const idx = configs.findIndex((v) => v.id === id);
+    if (idx === -1) return;
+    configs.splice(idx, 1);
+    await ChromeStorageService.set(ChromeStorage.OPENAI_CONFIGS, configs);
+  }
+
+  public static async updateConfigs(
+    config: Partial<OpenAIConfig>
+  ): Promise<void> {
+    const configs = await this.getConfigs();
+    if (config.id) {
+      const idx = configs.findIndex((v) => v.id === config.id);
+      if (idx > -1) {
+        configs[idx] = config as OpenAIConfig;
+        await ChromeStorageService.set(ChromeStorage.OPENAI_CONFIGS, configs);
+        return;
+      }
+      return;
+    }
+    await ChromeStorageService.set(
+      ChromeStorage.OPENAI_CONFIGS,
+      configs.concat(config as OpenAIConfig)
+    );
+  }
+
+  public static async getConfigs(): Promise<OpenAIConfig[]> {
+    const resp = await ChromeStorageService.get<OpenAIConfig[]>(
+      ChromeStorage.OPENAI_CONFIGS
+    );
+    return (!!resp && resp) || [];
+  }
+  public static async initializeConfigs(): Promise<OpenAIConfig[]> {
+    try {
+      await ChromeStorageService.set(
+        ChromeStorage.OPENAI_CONFIGS,
+        OpenAIUtil.defaultConfigs
+      );
+      return this.getConfigs();
+    } catch (e) {
+      return [];
+    }
   }
 }

@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { OpenAIConfig } from "../../types";
 import CopyToClipboardPWrapper from "../shared-components/copy-to-clipboard";
-import { OpenAIUtil, useChromeEvent, Util } from "../utils";
+import { OpenAIUtil } from "../utils";
 interface Props
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
@@ -9,24 +9,20 @@ interface Props
   > {
   config: OpenAIConfig;
 }
-function SelectedText({ config }: Props) {
-  const contextRef = useRef<HTMLInputElement>(null);
-  const { executeScript } = useChromeEvent<string>({
-    onChromeResponse: analyse,
-  });
+function SimpleQuery({ config }: Props) {
+  const [query, setQuery] = useState<string>(
+    "Tell me creative birthday ideas!"
+  );
   const [openAIResponse, setOpenAIResponse] = useState<{
     error?: string;
     response?: string;
   }>({});
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  async function analyse(s: string) {
-    if (typeof s !== "string" || !!!s) {
-      throw "No text selected...";
-    }
+  async function askQuery() {
     try {
       const c = config.config;
-      c.prompt = `${contextRef.current?.value}\n"${s}"`;
+      c.prompt = query.trim();
       const completion = await OpenAIUtil.getOpenAIAPI<any>(
         OpenAIUtil.getAxiosConfig(config)
       );
@@ -36,38 +32,23 @@ function SelectedText({ config }: Props) {
       );
       setLoading(false);
     } catch (e) {
-      setOpenAIResponse({
-        error: Util.catchStringError(e, "No response detected..."),
-      });
-      setLoading(false);
-    }
-  }
-  async function onAnalyse() {
-    try {
-      setOpenAIResponse({ response: "Loading..." });
-      setLoading(true);
-      executeScript((action: string) => {
-        chrome.runtime.sendMessage({
-          action,
-          data: document.getSelection()?.toString(),
-        });
-      });
-    } catch (e) {
+      setOpenAIResponse({ error: "No response detected..." });
       setLoading(false);
     }
   }
   return (
     <>
       <div className="context flex gap-2 items-center">
-        <p>Context</p>
-        <input
-          type="text"
-          placeholder="Please translate it to spanish"
-          ref={contextRef}
-          className="flex-1 pl-2 rounded-sm"
+        <textarea
+          placeholder="Tell me creative birthday ideas!"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex-1 pl-2 rounded-sm w-full"
         />
       </div>
-      <button onClick={onAnalyse}>Analyse Selected Text</button>
+      <button onClick={askQuery} disabled={query.trim().length === 0}>
+        Ask simple query
+      </button>
       {openAIResponse.error && (
         <p className="text-red-700 text-center">
           <strong>{openAIResponse.error}</strong>
@@ -83,4 +64,4 @@ function SelectedText({ config }: Props) {
   );
 }
 
-export default SelectedText;
+export default SimpleQuery;

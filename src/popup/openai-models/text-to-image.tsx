@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { OpenAIConfig } from "../../types";
-import PopupService from "../popup.service";
+import React, { useState } from "react";
+import { OpenAIConfig, OpenAIModeName } from "../../types";
 import LoadingComponent from "../shared-components/loading-component";
-import { OpenAIUtil } from "../utils";
+import { OpenAIUtil, useChromeEvent, Util } from "../utils";
 interface Props
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
@@ -15,23 +14,24 @@ export default function TextToImage({ config }: Props) {
     error?: string;
     response?: any;
   }>({});
+  const { executeScript } = useChromeEvent<string>({
+    onChromeResponse: analyse,
+  });
   const [isLoading, setLoading] = useState<boolean>(false);
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener(onChromeEvent);
-    return () => chrome.runtime.onMessage.removeListener(onChromeEvent);
-  }, []);
-  const onChromeEvent = (message: Partial<{ action: string; data: any }>) => {
-    if (message.action !== PopupService.getPopupChromeEventId()) return;
-    analyse(message.data);
-  };
+  const [preCondition, setPrecondition] = useState<string>(
+    "Summarize in less than 10 words"
+  );
 
   async function analyse(s: string) {
-    if (typeof s !== "string" || !!!s) {
-      return setOpenAIResponse({ error: "No text selected..." });
-    }
     try {
-      const completionConfig = OpenAIUtil.defaultConfigs[0];
-      completionConfig.config.prompt = `Summarize in less than 10 words\n"${s}"`;
+      if (typeof s !== "string" || !!!s) {
+        throw "No text selected...";
+      }
+      const completionConfig = OpenAIUtil.defaultConfigs.find(
+        (v) => v.name === OpenAIModeName.ANALYSE_SELECTED_TEXT
+      );
+      if (!completionConfig) throw new Error("Oops! default config missing");
+      completionConfig.config.prompt = `${preCondition.trim()}\n"${s}"`;
       const completion = await OpenAIUtil.getOpenAIAPI<any>(
         OpenAIUtil.getAxiosConfig(completionConfig)
       );
@@ -47,28 +47,20 @@ export default function TextToImage({ config }: Props) {
       setLoading(false);
     } catch (e) {
       setLoading(false);
-      setOpenAIResponse({ error: "No response or error detected..." });
+      setOpenAIResponse({
+        error: Util.catchStringError(e, "No response or error detected..."),
+      });
     }
   }
   async function onAnalyse() {
     try {
       setLoading(true);
-      const tabs = await chrome.tabs.query({
-        active: true,
-        lastFocusedWindow: true,
-      });
-      if (tabs[0]?.id) {
-        chrome.scripting.executeScript({
-          target: { tabId: tabs[0].id },
-          func: (action: string) => {
-            chrome.runtime.sendMessage({
-              action,
-              data: document.getSelection()?.toString(),
-            });
-          },
-          args: [PopupService.getPopupChromeEventId()],
+      executeScript((action: string) => {
+        chrome.runtime.sendMessage({
+          action,
+          data: document.getSelection()?.toString(),
         });
-      }
+      });
     } catch (e) {
       setLoading(false);
     }
@@ -76,7 +68,15 @@ export default function TextToImage({ config }: Props) {
   return (
     <LoadingComponent isLoading={isLoading}>
       <div className="flex flex-col gap-2">
-        <button onClick={onAnalyse}>Convert text to image</button>
+        <input
+          type="text"
+          className="p-1 rounded-sm w-full"
+          value={preCondition}
+          onChange={(e) => setPrecondition(e.target.value)}
+        />
+        <button onClick={onAnalyse} disabled={preCondition.trim().length === 0}>
+          Convert selected text to image
+        </button>
         {openAIResponse.error && (
           <p className="text-red-700 text-center">
             <strong>{openAIResponse.error}</strong>

@@ -1,4 +1,4 @@
-import { Method } from "axios";
+import { AxiosRequestConfig, Method } from "axios";
 enum ChromeEvents {
   ACTION_SELECTED_TEXT = "ACTION_SELECTED_TEXT",
   ACTION_ONSCROLL = "ACTION_ONSCROLL",
@@ -8,6 +8,7 @@ enum ChromeStorage {
   OPENAI_CONFIGS = "OPENAI_CONFIGS",
 }
 enum OpenAIModeName {
+  SIMPLE_QUERY = "SIMPLE_QUERY",
   ANALYSE_SELECTED_TEXT = "ANALYSE_SELECTED_TEXT",
   TEXT_TO_IMAGE = "TEXT_TO_IMAGE",
   TRANSCRIPTIONS = "TRANSCRIPTIONS",
@@ -20,6 +21,9 @@ type OpenAIConfig = {
   config: Record<string, any>;
   url: string;
   method?: Method | "POST";
+  headers?: Record<string, any>;
+  axiosConfig?: AxiosRequestConfig;
+  fontSizeInPx?: number;
 };
 
 export { ChromeEvents, ChromeStorage, OpenAIConfig, OpenAIModeName };

@@ -11,6 +11,7 @@ interface Props
 let transcriptions: string[] = [];
 let STREAM: any = null;
 const AUDIO_INTERVAL = 1000;
+const MUTED_CHUNK = 1.75;
 export default function TranscriptionAudio({ config }: Props) {
   const [interval, setIntervalN] = useState<number>(AUDIO_INTERVAL);
   //
@@ -36,6 +37,16 @@ export default function TranscriptionAudio({ config }: Props) {
       STREAM?.getTracks?.()?.forEach((track: any) => track?.stop?.());
     };
   }, []);
+  const updateTranscript = (s: string, c: number) => {
+    transcriptions[c] = s.trim();
+    if (transcriptionsRef.current) {
+      const filteredTranscripts = transcriptions.filter(String);
+      filteredTranscripts[filteredTranscripts.length - 1] = `<strong>${
+        filteredTranscripts[filteredTranscripts.length - 1]
+      }</strong>`;
+      transcriptionsRef.current.innerHTML = filteredTranscripts.join(" ");
+    }
+  };
   const startRecording = () => {
     chrome.tabCapture.capture({ audio: true }, function (stream: any) {
       STREAM = stream;
@@ -57,7 +68,8 @@ export default function TranscriptionAudio({ config }: Props) {
           });
           recorder.addEventListener("stop", function () {
             const blob = new Blob(chunks, { type: "audio/mp3" });
-            if (blob.size === 0) return;
+            if (blob.size <= MUTED_CHUNK * audioIntervalref.current) return;
+            updateTranscript("[...]", count);
             config.config["file"] = new File([blob], "audio.mp3", {
               type: "audio/mp3",
             });
@@ -68,19 +80,13 @@ export default function TranscriptionAudio({ config }: Props) {
               data: {
                 text: string;
               };
-            }>(getApiConfig(form)).then((response) => {
-              transcriptions[count] = response.data.text.trim();
-              if (transcriptionsRef.current) {
-                const filteredTranscripts = transcriptions.filter(String);
-                filteredTranscripts[
-                  filteredTranscripts.length - 1
-                ] = `<strong>${
-                  filteredTranscripts[filteredTranscripts.length - 1]
-                }</strong>`;
-                transcriptionsRef.current.innerHTML =
-                  filteredTranscripts.join(" ");
-              }
-            });
+            }>(getApiConfig(form))
+              .then((response) => {
+                updateTranscript(response.data.text, count);
+              })
+              .catch(() => {
+                updateTranscript("", count);
+              });
           });
         };
         saveRecording(intervalCount++);
