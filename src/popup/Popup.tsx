@@ -15,7 +15,7 @@ function App() {
   async function initialize() {
     try {
       const [configs, apiKey] = await Promise.all([
-        ChromeStorageService.initializeConfigs(),
+        OpenAIUtil.initializeConfigs(),
         ChromeStorageService.get<string>(ChromeStorage.OPENAI_API),
       ]);
       service.openAIConfigs = configs;
@@ -35,12 +35,15 @@ function App() {
     <div className="flex flex-col gap-3 m-6">
       {(service.hasApiKey && (
         <>
-          <button onClick={() => chrome.runtime.openOptionsPage()}>
-            Options
-          </button>
           <div className="flex flex-col gap-1">
-            <div className="flex justify-between items-center">
-              <p>Select Config</p>
+            <div className="flex gap-1 justify-between items-center">
+              <strong>Select Mode</strong>
+              <button
+                className="flex-1"
+                onClick={() => chrome.runtime.openOptionsPage()}
+              >
+                Options
+              </button>
             </div>
             <div className="flex gap-2">
               <select

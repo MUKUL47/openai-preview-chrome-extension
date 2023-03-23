@@ -14,6 +14,7 @@ export default [
     },
     url: "https://api.openai.com/v1/completions",
     method: "POST",
+    fontSizeInPx: 16,
   },
   {
     name: OpenAIModeName.ANALYSE_SELECTED_TEXT,
@@ -29,6 +30,7 @@ export default [
     },
     url: "https://api.openai.com/v1/completions",
     method: "POST",
+    fontSizeInPx: 16,
   },
   {
     name: OpenAIModeName.TEXT_TO_IMAGE,
@@ -48,6 +50,7 @@ export default [
     },
     url: "https://api.openai.com/v1/audio/transcriptions",
     method: "POST",
+    fontSizeInPx: 14.5,
   },
   {
     name: OpenAIModeName.TRANSLATIONS,
@@ -57,5 +60,6 @@ export default [
     },
     url: "https://api.openai.com/v1/audio/translations",
     method: "POST",
+    fontSizeInPx: 14.5,
   },
 ] as OpenAIConfig[];

@@ -74,7 +74,10 @@ function SelectedText({ config }: Props) {
         </p>
       )}
       {openAIResponse.response && (
-        <CopyToClipboardPWrapper isLoading={isLoading}>
+        <CopyToClipboardPWrapper
+          isLoading={isLoading}
+          style={OpenAIUtil.getStyle(config)}
+        >
           {openAIResponse.response}
         </CopyToClipboardPWrapper>
       )}

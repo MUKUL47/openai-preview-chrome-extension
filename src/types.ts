@@ -21,8 +21,7 @@ type OpenAIConfig = {
   config: Record<string, any>;
   url: string;
   method?: Method | "POST";
-  headers?: Record<string, any>;
-  axiosConfig?: AxiosRequestConfig;
+  axiosConfig?: Record<string, any>;
   fontSizeInPx?: number;
 };
 

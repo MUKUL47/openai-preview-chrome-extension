@@ -9,6 +9,7 @@ interface Props
   config: OpenAIConfig;
 }
 let transcriptions: string[] = [];
+const MUTED_CHUNK = 1.75;
 let STREAM: any = null;
 const AUDIO_INTERVAL = 1000;
 export default function TranslateAudioEn({ config }: Props) {
@@ -64,7 +65,8 @@ export default function TranslateAudioEn({ config }: Props) {
           );
           recorder.addEventListener("stop", function () {
             const blob = new Blob(chunks, { type: "audio/mp3" });
-            if (blob.size === 0) return;
+            if (blob.size <= MUTED_CHUNK * audioIntervalref.current) return;
+            updateTranscript("[...]", count);
             config.config["file"] = new File([blob], "audio.mp3", {
               type: "audio/mp3",
             });
@@ -98,7 +100,7 @@ export default function TranslateAudioEn({ config }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <button onClick={clearTranscript}>Clear</button>
-      <div ref={transcriptionsRef}>
+      <div ref={transcriptionsRef} style={OpenAIUtil.getStyle(config)}>
         <strong className="underline italic">Translating...</strong>
       </div>
     </div>

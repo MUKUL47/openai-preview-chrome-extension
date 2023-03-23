@@ -124,7 +124,7 @@ export default function TranscriptionAudio({ config }: Props) {
         />
         <button onClick={onIntervalChange}>Start</button>
       </div>
-      <div ref={transcriptionsRef}>
+      <div ref={transcriptionsRef} style={OpenAIUtil.getStyle(config)}>
         <strong className="underline italic">Listening...</strong>
       </div>
     </div>

@@ -20,6 +20,24 @@ class Util {
   public static catchStringError(e: any, defaultError: string): string {
     return (typeof e === "string" && e) || defaultError;
   }
+  public static transformRecordToStr(obj: Record<any, any>): string {
+    return Object.entries(obj)
+      .reduce<string[]>((a: string[], c: Array<any>) => {
+        return [...a, `${c[0]}=${c[1]}`];
+      }, [])
+      .join(` ; `);
+  }
+
+  public static transformStrToObj(str: string): Record<any, any> {
+    try {
+      return str.split(";").reduce<Record<string, string>>((a, c) => {
+        const [k, v] = c.split("=");
+        return { ...a, [k.trim()]: v.trim() };
+      }, {});
+    } catch (e) {
+      return {};
+    }
+  }
   public static transpileJSX(jsx: string): string | null {
     const transpiled = ts.transpileModule(jsx, {
       compilerOptions: { jsx: ts.JsxEmit.React, strictFunctionTypes: false },

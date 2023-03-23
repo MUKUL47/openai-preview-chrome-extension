@@ -21,6 +21,7 @@ function SimpleQuery({ config }: Props) {
 
   async function askQuery() {
     try {
+      setOpenAIResponse({ response: "Loading..." });
       const c = config.config;
       c.prompt = query.trim();
       const completion = await OpenAIUtil.getOpenAIAPI<any>(
@@ -55,7 +56,10 @@ function SimpleQuery({ config }: Props) {
         </p>
       )}
       {openAIResponse.response && (
-        <CopyToClipboardPWrapper isLoading={isLoading}>
+        <CopyToClipboardPWrapper
+          isLoading={isLoading}
+          style={OpenAIUtil.getStyle(config)}
+        >
           {openAIResponse.response}
         </CopyToClipboardPWrapper>
       )}

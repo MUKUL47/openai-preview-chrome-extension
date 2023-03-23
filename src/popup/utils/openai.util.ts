@@ -64,6 +64,14 @@ export default class OpenAIUtil {
     );
   }
 
+  public static getStyle(config: OpenAIConfig): Record<string, any> {
+    return (
+      (config?.fontSizeInPx && {
+        fontSize: `${config?.fontSizeInPx}px`,
+      }) ||
+      {}
+    );
+  }
   public static async getConfigs(): Promise<OpenAIConfig[]> {
     const resp = await ChromeStorageService.get<OpenAIConfig[]>(
       ChromeStorage.OPENAI_CONFIGS
