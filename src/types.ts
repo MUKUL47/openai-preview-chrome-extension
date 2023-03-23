@@ -10,6 +10,8 @@ enum ChromeStorage {
 enum OpenAIModeName {
   ANALYSE_SELECTED_TEXT = "ANALYSE_SELECTED_TEXT",
   TEXT_TO_IMAGE = "TEXT_TO_IMAGE",
+  TRANSCRIPTIONS = "TRANSCRIPTIONS",
+  TRANSLATIONS = "TRANSLATIONS",
 }
 type OpenAIConfig = {
   id: number;

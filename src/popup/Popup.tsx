@@ -4,14 +4,6 @@ import "./Popup.css";
 import PopupService from "./popup.service";
 import { OpenAIUtil, Util } from "./utils";
 import { ChromeStorageService } from "./utils/chrome-storage.util";
-export const code = `
-import { useEffect, useState } from "react";
-import { ChromeStorage } from "../types";
-import "./Popup.css";
-import PopupService from "./popup.service";
-import { OpenAIUtil, Util } from "./utils";
-import { ChromeStorageService } from "./utils/chrome-storage.util";
-
 function App() {
   const [{ service }, setService] = useState<Record<string, PopupService>>({
     service: new PopupService(),
@@ -22,82 +14,8 @@ function App() {
 
   async function initialize() {
     try {
-      const [, configs, apiKey] = await Promise.all([
+      const [configs, apiKey] = await Promise.all([
         ChromeStorageService.initializeConfigs(),
-        ChromeStorageService.getConfigs(),
-        ChromeStorageService.get<string>(ChromeStorage.OPENAI_API),
-      ]);
-      service.openAIConfigs = configs;
-      service.selectedConfig = configs[0];
-      service.hasApiKey = !!apiKey;
-      if (service.hasApiKey) {
-        OpenAIUtil.setAPIKey(apiKey);
-      }
-      setService({
-        service: service.intializedService(),
-      });
-    } catch (e) {}
-  }
-
-  const Mode = service.GetActiveMode(service.selectedConfig!);
-  return (
-    <div className="flex flex-col gap-3 m-6">
-      {(service.hasApiKey && (
-        <>
-          <button onClick={() => chrome.runtime.openOptionsPage()}>
-            Options
-          </button>
-          <div className="flex flex-col gap-1">
-            <div className="flex justify-between items-center">
-              <p>Select Config</p>
-            </div>
-            <div className="flex gap-2">
-              <select
-                className="p-2 rounded-md flex-1"
-                value={service.selectedConfig?.id}
-                onChange={(e) => {
-                  service.selectedConfig =
-                    OpenAIUtil.defaultConfigs.find(
-                      (v) => v.id === Number(e.target.value)
-                    ) || null;
-                  setService({ service });
-                }}
-              >
-                {service.openAIConfigs?.map((config) => (
-                  <option value={config.id} key={config.id}>
-                    {Util.beautifyCamelCase(config.name)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          {(Mode && <Mode config={service.selectedConfig} />) ||
-            "Mode not found..."}
-        </>
-      )) || (
-        <InitializeOpenAIKey
-          service={service}
-          setService={setService}
-          initialize={initialize}
-        />
-      )}
-    </div>
-  );
-}`;
-function App() {
-  const [{ service }, setService] = useState<Record<string, PopupService>>({
-    service: new PopupService(),
-  });
-  useEffect(() => {
-    initialize();
-    console.log(Util.transpileJSX(code));
-  }, []);
-
-  async function initialize() {
-    try {
-      const [, configs, apiKey] = await Promise.all([
-        ChromeStorageService.initializeConfigs(),
-        ChromeStorageService.getConfigs(),
         ChromeStorageService.get<string>(ChromeStorage.OPENAI_API),
       ]);
       service.openAIConfigs = configs;

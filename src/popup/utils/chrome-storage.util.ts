@@ -43,12 +43,12 @@ export class ChromeStorageService {
     );
   }
 
-  public static async initializeConfigs(): Promise<void> {
+  public static async initializeConfigs(): Promise<OpenAIConfig[]> {
     try {
-      const configs = await this.getConfigs();
-      if (configs.length === 0) {
-        await this.set(ChromeStorage.OPENAI_CONFIGS, OpenAIUtil.defaultConfigs);
-      }
-    } catch (e) {}
+      await this.set(ChromeStorage.OPENAI_CONFIGS, OpenAIUtil.defaultConfigs);
+      return this.getConfigs();
+    } catch (e) {
+      return [];
+    }
   }
 }

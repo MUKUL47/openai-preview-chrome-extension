@@ -1,6 +1,8 @@
 import { OpenAIConfig, OpenAIModeName } from "../types";
 import SelectedText from "./openai-models/selected-text";
 import TextToImage from "./openai-models/text-to-image";
+import TranscriptionAudio from "./openai-models/transcriptions-audio";
+import TranslateAudioEn from "./openai-models/translate-audio-en";
 
 export default class PopupService {
   public static TRANSPILED_CODE: any = null;
@@ -33,6 +35,10 @@ export default class PopupService {
         return SelectedText;
       case OpenAIModeName.TEXT_TO_IMAGE:
         return TextToImage;
+      case OpenAIModeName.TRANSCRIPTIONS:
+        return TranscriptionAudio;
+      case OpenAIModeName.TRANSLATIONS:
+        return TranslateAudioEn;
       default:
         return null;
     }

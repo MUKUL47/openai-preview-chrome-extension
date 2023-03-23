@@ -29,6 +29,24 @@ export default class OpenAIUtil {
       url: "https://api.openai.com/v1/images/generations",
       method: "POST",
     },
+    {
+      name: OpenAIModeName.TRANSCRIPTIONS,
+      id: -3,
+      config: {
+        model: "whisper-1",
+      },
+      url: "https://api.openai.com/v1/audio/transcriptions",
+      method: "POST",
+    },
+    {
+      name: OpenAIModeName.TRANSLATIONS,
+      id: -4,
+      config: {
+        model: "whisper-1",
+      },
+      url: "https://api.openai.com/v1/audio/translations",
+      method: "POST",
+    },
   ];
   public static getApiKey(): string {
     return this.API_KEY;
