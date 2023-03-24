@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from "react";
-import { OpenAIUtil, Util } from "../../utils";
 import { OpenAIConfig } from "../../types";
+import { OpenAIUtil, Util } from "../../utils";
 interface Props
   extends React.DetailedHTMLProps<
     React.FormHTMLAttributes<HTMLFormElement>,
@@ -9,9 +9,8 @@ interface Props
   openAIConfig: OpenAIConfig;
   onUpdate: () => void;
 }
-type OpenAIConfigEdit = Omit<OpenAIConfig, "config" | "axiosConfig"> & {
+type OpenAIConfigEdit = Omit<OpenAIConfig, "config"> & {
   config: string;
-  axiosConfig: string;
 };
 const INPUT_CLASS = "flex-1 p-2 rounded-md w-full";
 const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
@@ -23,7 +22,6 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
     return {
       ...config,
       config: Util.transformRecordToStr(config.config),
-      axiosConfig: Util.transformRecordToStr(config?.axiosConfig || {}),
     };
   }
   const onResetOriginal = async () => {
@@ -48,14 +46,14 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
     try {
       e.preventDefault();
       setUpdating(true);
+      const configData = Util.transformStrToObj(config.config);
+      if (!configData) {
+        return alert(`Config is invalid please check`);
+      }
       const newConfig: OpenAIConfig = {
         ...config,
-        config: Util.transformStrToObj(config.config),
-        axiosConfig: Util.transformStrToObj(config.axiosConfig),
+        config: configData,
       };
-      if (config.axiosConfig.length === 0) {
-        delete newConfig.axiosConfig;
-      }
       await OpenAIUtil.updateConfigs(newConfig);
       onUpdate();
     } catch (e) {
@@ -82,11 +80,20 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
           />
         </InputWrapper>
         <InputWrapper label="OpenAI Config">
-          <textarea
-            {...getAndUpdate("config")}
-            required
-            className={INPUT_CLASS}
-          />
+          <div className="flex flex-col gap-2">
+            <textarea
+              {...getAndUpdate("config")}
+              required
+              className={INPUT_CLASS}
+              placeholder="model=open_ai_model;tokens=1000"
+            />
+            <a
+              href="https://platform.openai.com/docs/api-reference"
+              target="_blank"
+            >
+              Open AI API documentation
+            </a>
+          </div>
         </InputWrapper>
         <InputWrapper label="API Url">
           <input
@@ -105,13 +112,14 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
             placeholder="Font Size"
           />
         </InputWrapper>
-        <InputWrapper label="Option Axios Config">
+        {/* <InputWrapper label="Option Axios Config">
+          <a className="text-sm"></a>
           <textarea
             placeholder="Option Axios Config"
             className={INPUT_CLASS}
             {...getAndUpdate("axiosConfig")}
           />
-        </InputWrapper>
+        </InputWrapper> */}
       </div>
       <div className="flex gap-4 mt-3">
         <button disabled={updating}>

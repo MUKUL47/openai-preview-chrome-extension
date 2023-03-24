@@ -45,5 +45,6 @@ export default defineManifest({
     "activeTab",
     "tabCapture",
     "audioCapture",
+    "scripting",
   ],
 });

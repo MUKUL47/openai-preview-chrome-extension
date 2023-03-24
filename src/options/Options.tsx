@@ -28,7 +28,7 @@ export default function App() {
             value={key}
             onChange={(e) => setKey(e.target.value)}
           />
-          <button disabled={key.trim().length === 0} onClick={onUpdateAPIKey}>
+          <button disabled={key?.trim()?.length === 0} onClick={onUpdateAPIKey}>
             Save
           </button>
         </div>

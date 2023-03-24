@@ -49,7 +49,7 @@ function App() {
                 value={service.selectedConfig?.id}
                 onChange={(e) => {
                   service.selectedConfig =
-                    OpenAIUtil.defaultConfigs.find(
+                    service.openAIConfigs.find(
                       (v) => v.id === Number(e.target.value)
                     ) || null;
                   setService({ service });

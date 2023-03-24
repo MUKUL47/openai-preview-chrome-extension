@@ -28,16 +28,24 @@ class Util {
       .join(` ; `);
   }
 
-  public static transformStrToObj(str: string): Record<any, any> {
+  public static JSONParse<T extends unknown>(s: string): T | null {
+    try {
+      return JSON.parse(s) as T;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  public static transformStrToObj(str: string): Record<any, any> | null {
     try {
       return str.split(";").reduce<Record<string, any>>((a, c) => {
         if (c.trim().length === 0) return a;
         const [k, v] = c.split("=");
-        const val = (!isNaN(Number(v)) && Number(v)) || v.trim();
+        const val = !isNaN(Number(v)) ? Number(v) : v.trim();
         return { ...a, [k.trim()]: val };
       }, {});
     } catch (e) {
-      return {};
+      return null;
     }
   }
   public static transpileJSX(jsx: string): string | null {
