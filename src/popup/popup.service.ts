@@ -6,7 +6,6 @@ import TranscriptionAudio from "./openai-models/transcriptions-audio";
 import TranslateAudioEn from "./openai-models/translate-audio-en";
 
 export default class PopupService {
-  public static TRANSPILED_CODE: any = null;
   private static readonly POPUP_CHROME_EVENT_ID = `${Date.now()}-${Math.random()}`;
   public isIntializing = true;
   public hasApiKey = false;

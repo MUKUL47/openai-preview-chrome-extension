@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { OpenAIUtil, Util } from "../../utils";
 import { OpenAIConfig } from "../../types";
 interface Props
@@ -44,7 +44,7 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
       },
     };
   };
-  const onSubmit = async (e: any) => {
+  const onSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
       setUpdating(true);
@@ -64,7 +64,7 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
   };
 
   const preventDefault = (fn: Function) => {
-    return (e: any) => {
+    return (e: FormEvent) => {
       e.preventDefault();
       fn.apply(null);
     };
@@ -132,7 +132,7 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
     </form>
   );
 };
-function InputWrapper(props: any) {
+function InputWrapper(props: { children: React.ReactNode; label: string }) {
   return (
     <div className="flex gap-1 flex-col">
       <label className="flex-1 text-left">{props.label}</label>
