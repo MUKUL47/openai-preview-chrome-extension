@@ -1,5 +1,5 @@
 import React from "react";
-import { Util } from "../../utils";
+import { Util } from "../utils";
 interface Props
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLParagraphElement>,

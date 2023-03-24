@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { ChromeStorageService } from "../utils";
+import { ChromeStorageService, OpenAIUtil } from "../utils";
 import { ChromeStorage, OpenAIConfig } from "../types";
 import EditConfig from "./components/edit-config";
 import Configs from "./components/option-configs";
+import Footer from "../shared-components/footer";
 export default function App() {
   const [editMode, setEditMode] = useState<OpenAIConfig | null>(null);
   const [key, setKey] = useState<string>("");
@@ -43,16 +44,7 @@ export default function App() {
           />
         </div>
       )}
-      <footer>
-        Made by{" "}
-        <a
-          href="https://www.linkedin.com/in/mukul-dutt/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Mukul
-        </a>
-      </footer>
+      <Footer />
     </div>
   );
 }

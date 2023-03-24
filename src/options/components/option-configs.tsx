@@ -10,7 +10,7 @@ const Configs = ({ onEdit }: Props) => {
     init();
   }, []);
   const init = async () => {
-    SetOpenAIConfigs(await OpenAIUtil.getConfigs());
+    SetOpenAIConfigs(await OpenAIUtil.initializeConfigs());
   };
   return (
     <table className="w-full border border-gray-300 rounded-lg">

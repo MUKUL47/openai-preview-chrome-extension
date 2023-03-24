@@ -4,6 +4,7 @@ import "./Popup.css";
 import PopupService from "./popup.service";
 import { OpenAIUtil, Util } from "../utils";
 import { ChromeStorageService } from "../utils/chrome-storage.util";
+import Footer from "../shared-components/footer";
 function App() {
   const [{ service }, setService] = useState<Record<string, PopupService>>({
     service: new PopupService(),
@@ -72,6 +73,7 @@ function App() {
           initialize={initialize}
         />
       )}
+      <Footer />
     </div>
   );
 }
