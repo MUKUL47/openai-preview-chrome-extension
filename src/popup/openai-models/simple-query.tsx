@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { OpenAIConfig } from "../../types";
 import CopyToClipboardPWrapper from "../shared-components/copy-to-clipboard";
-import { OpenAIUtil } from "../utils";
+import { OpenAIUtil } from "../../utils";
 interface Props
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,

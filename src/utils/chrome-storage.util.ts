@@ -1,4 +1,4 @@
-import { ChromeStorage } from "../../types";
+import { ChromeStorage } from "../types";
 
 export class ChromeStorageService {
   public static async get<T extends unknown>(k: ChromeStorage): Promise<T> {

@@ -29,16 +29,16 @@ export default class PopupService {
   }
 
   public GetActiveMode(config: OpenAIConfig): Function | null {
-    switch (config?.name) {
-      case OpenAIModeName.ANALYSE_SELECTED_TEXT:
+    switch (config?.id) {
+      case -1:
         return SelectedText;
-      case OpenAIModeName.TEXT_TO_IMAGE:
+      case -2:
         return TextToImage;
-      case OpenAIModeName.TRANSCRIPTIONS:
+      case -3:
         return TranscriptionAudio;
-      case OpenAIModeName.TRANSLATIONS:
+      case -4:
         return TranslateAudioEn;
-      case OpenAIModeName.SIMPLE_QUERY:
+      case -5:
         return SimpleQuery;
       default:
         return null;

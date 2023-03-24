@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { OpenAIConfig, OpenAIModeName } from "../../types";
 import LoadingComponent from "../shared-components/loading-component";
-import { OpenAIUtil, useChromeEvent, Util } from "../utils";
+import { OpenAIUtil, useChromeEvent, Util } from "../../utils";
 interface Props
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,

@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import PopupService from "../popup.service";
+import PopupService from "../popup/popup.service";
 
 type Props<S> = {
   onChromeResponse?: (response: S) => void;

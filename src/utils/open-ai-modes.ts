@@ -1,4 +1,4 @@
-import { OpenAIConfig, OpenAIModeName } from "../../types";
+import { OpenAIConfig, OpenAIModeName } from "../types";
 
 export default [
   {

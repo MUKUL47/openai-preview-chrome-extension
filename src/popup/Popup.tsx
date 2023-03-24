@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { ChromeStorage } from "../types";
 import "./Popup.css";
 import PopupService from "./popup.service";
-import { OpenAIUtil, Util } from "./utils";
-import { ChromeStorageService } from "./utils/chrome-storage.util";
+import { OpenAIUtil, Util } from "../utils";
+import { ChromeStorageService } from "../utils/chrome-storage.util";
 function App() {
   const [{ service }, setService] = useState<Record<string, PopupService>>({
     service: new PopupService(),
@@ -38,10 +38,7 @@ function App() {
           <div className="flex flex-col gap-1">
             <div className="flex gap-1 justify-between items-center">
               <strong>Select Mode</strong>
-              <button
-                className="flex-1"
-                onClick={() => chrome.runtime.openOptionsPage()}
-              >
+              <button onClick={() => chrome.runtime.openOptionsPage()}>
                 Options
               </button>
             </div>

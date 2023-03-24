@@ -31,6 +31,7 @@ class Util {
   public static transformStrToObj(str: string): Record<any, any> {
     try {
       return str.split(";").reduce<Record<string, string>>((a, c) => {
+        if (c.trim().length === 0) return a;
         const [k, v] = c.split("=");
         return { ...a, [k.trim()]: v.trim() };
       }, {});

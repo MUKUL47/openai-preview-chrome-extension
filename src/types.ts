@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, Method } from "axios";
+import { Method } from "axios";
 enum ChromeEvents {
   ACTION_SELECTED_TEXT = "ACTION_SELECTED_TEXT",
   ACTION_ONSCROLL = "ACTION_ONSCROLL",
@@ -6,6 +6,7 @@ enum ChromeEvents {
 enum ChromeStorage {
   OPENAI_API = "OPENAI_API",
   OPENAI_CONFIGS = "OPENAI_CONFIGS",
+  OPENAI_CONFIGS_ORIGINAL = "OPENAI_CONFIGS_ORIGINAL",
 }
 enum OpenAIModeName {
   SIMPLE_QUERY = "SIMPLE_QUERY",

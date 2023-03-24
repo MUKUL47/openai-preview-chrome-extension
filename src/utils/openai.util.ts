@@ -1,11 +1,11 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ChromeStorage, OpenAIConfig } from "../../types";
+import { ChromeStorage, OpenAIConfig } from "../types";
 import { ChromeStorageService } from "./chrome-storage.util";
 import openAIModes from "./open-ai-modes";
 
 export default class OpenAIUtil {
   private static API_KEY: string = "";
-  public static readonly defaultConfigs: OpenAIConfig[] = openAIModes;
+  public static defaultConfigs: OpenAIConfig[] = openAIModes;
   public static getApiKey(): string {
     return this.API_KEY;
   }
@@ -72,18 +72,35 @@ export default class OpenAIUtil {
       {}
     );
   }
-  public static async getConfigs(): Promise<OpenAIConfig[]> {
+  public static async getConfigs(original?: boolean): Promise<OpenAIConfig[]> {
     const resp = await ChromeStorageService.get<OpenAIConfig[]>(
-      ChromeStorage.OPENAI_CONFIGS
+      (original && ChromeStorage.OPENAI_CONFIGS_ORIGINAL) ||
+        ChromeStorage.OPENAI_CONFIGS
     );
     return (!!resp && resp) || [];
   }
+
   public static async initializeConfigs(): Promise<OpenAIConfig[]> {
     try {
-      await ChromeStorageService.set(
-        ChromeStorage.OPENAI_CONFIGS,
-        OpenAIUtil.defaultConfigs
-      );
+      if (
+        !(await ChromeStorageService.get<OpenAIConfig[]>(
+          ChromeStorage.OPENAI_CONFIGS
+        ))
+      ) {
+        await ChromeStorageService.set(
+          ChromeStorage.OPENAI_CONFIGS,
+          OpenAIUtil.defaultConfigs
+        );
+      }
+      if (
+        !(await ChromeStorageService.get<string>(
+          ChromeStorage.OPENAI_CONFIGS_ORIGINAL
+        ))
+      ) {
+        this.getConfigs().then((c) =>
+          ChromeStorageService.set(ChromeStorage.OPENAI_CONFIGS_ORIGINAL, c)
+        );
+      }
       return this.getConfigs();
     } catch (e) {
       return [];
