@@ -1,9 +1,12 @@
 {
   "name": "openai-preview-chrome-extension",
   "version": "0.0.0",
-  "author": "",
-  "description": "",
+  "author": "Mukul",
+  "description": "Open AI - Preview is a Chrome extension that allows you to interact with the browser in different modes",
   "type": "module",
+  "repository": {
+    "url": "https://github.com/MUKUL47/openai-preview-chrome-extension"
+  },
   "license": "MIT",
   "keywords": [
     "chrome-extension",
