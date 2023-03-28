@@ -6,7 +6,7 @@ Open AI - Preview is a Chrome extension that allows you to interact with the bro
 - **Context Selection Mode:** Allows you to select text on the webpage and get related information from OpenAI's GPT-3 model.
 - **Image Creation Mode:** Allows you to generate images from selected text using OpenAI's DALL-E model.
 - **Realtime Transcription Mode:** Allows you to get real-time transcriptions of running audio using OpenAI's API.
-- **Translation Mode:** Allows you to translate text using OpenAI's GPT-3 model.
+- **Translation / Transcript Mode:** Allows you to translate & transcript audio to text using OpenAI's GPT-3 whisper-3 model.
 
 To use the extension, you will need to provide your OpenAI API key in the options page. Additionally, the extension includes options to provide custom payload for specific models.
 
