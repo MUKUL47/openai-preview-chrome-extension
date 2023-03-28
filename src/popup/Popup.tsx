@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChromeStorage } from "../types";
 import "./Popup.css";
 import PopupService from "./popup.service";
@@ -6,8 +6,9 @@ import { OpenAIUtil, Util } from "../utils";
 import { ChromeStorageService } from "../utils/chrome-storage.util";
 import Footer from "../shared-components/footer";
 function App() {
+  const popupService = useMemo(() => new PopupService(), []);
   const [{ service }, setService] = useState<Record<string, PopupService>>({
-    service: new PopupService(),
+    service: popupService,
   });
   useEffect(() => {
     initialize();
@@ -31,7 +32,10 @@ function App() {
     } catch (e) {}
   }
 
-  const Mode = service.GetActiveMode(service.selectedConfig!);
+  const Mode = useMemo(() => {
+    if (!service.selectedConfig) return null;
+    return service.GetActiveMode(service.selectedConfig);
+  }, [service.selectedConfig]);
   return (
     <div className="flex flex-col gap-3 m-6">
       {(service.hasApiKey && (

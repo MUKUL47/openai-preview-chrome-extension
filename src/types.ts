@@ -1,8 +1,4 @@
 import { Method } from "axios";
-enum ChromeEvents {
-  ACTION_SELECTED_TEXT = "ACTION_SELECTED_TEXT",
-  ACTION_ONSCROLL = "ACTION_ONSCROLL",
-}
 enum ChromeStorage {
   OPENAI_API = "OPENAI_API",
   OPENAI_CONFIGS = "OPENAI_CONFIGS",
@@ -24,4 +20,4 @@ type OpenAIConfig = {
   fontSizeInPx?: number;
 };
 
-export { ChromeEvents, ChromeStorage, OpenAIConfig, OpenAIModeName };
+export { ChromeStorage, OpenAIConfig, OpenAIModeName };

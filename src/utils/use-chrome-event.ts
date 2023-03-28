@@ -16,7 +16,6 @@ export default function useChromeEvent<S extends unknown>({
   }, []);
 
   const onChromeEvent = (message: Partial<{ action: string; data: S }>) => {
-    console.log("event-", message);
     if (message.action !== chromeEventId) return;
     onChromeResponse?.(message.data as S);
   };
