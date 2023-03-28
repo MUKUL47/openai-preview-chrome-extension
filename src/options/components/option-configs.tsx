@@ -21,7 +21,7 @@ const Configs = ({ onEdit }: Props) => {
         </tr>
         {openAIConfigs.map((config) => {
           return (
-            <tr className="h-1/2" key={config.id}>
+            <tr className="h-1/2" key={config.name}>
               <td className="bg-gray-400 px-4 py-2 text-center text-black">
                 {Util.beautifyCamelCase(config.name)}
               </td>

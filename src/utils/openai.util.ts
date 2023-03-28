@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ChromeStorage, OpenAIConfig } from "../types";
+import { ChromeStorage, OpenAIConfig, OpenAIModeName } from "../types";
 import { ChromeStorageService } from "./chrome-storage.util";
 import openAIModes from "./open-ai-modes";
 
@@ -37,9 +37,9 @@ export default class OpenAIUtil {
 
   //
 
-  public static async deleteConfig(id: number): Promise<void> {
+  public static async deleteConfig(name: OpenAIModeName): Promise<void> {
     const configs = await this.getConfigs();
-    const idx = configs.findIndex((v) => v.id === id);
+    const idx = configs.findIndex((v) => v.name === name);
     if (idx === -1) return;
     configs.splice(idx, 1);
     await ChromeStorageService.set(ChromeStorage.OPENAI_CONFIGS, configs);
@@ -49,8 +49,8 @@ export default class OpenAIUtil {
     config: Partial<OpenAIConfig>
   ): Promise<void> {
     const configs = await this.getConfigs();
-    if (config.id) {
-      const idx = configs.findIndex((v) => v.id === config.id);
+    if (config.name) {
+      const idx = configs.findIndex((v) => v.name === config.name);
       if (idx > -1) {
         configs[idx] = config as OpenAIConfig;
         await ChromeStorageService.set(ChromeStorage.OPENAI_CONFIGS, configs);

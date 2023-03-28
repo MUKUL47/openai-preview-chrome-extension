@@ -46,17 +46,17 @@ function App() {
             <div className="flex gap-2">
               <select
                 className="p-2 rounded-md flex-1"
-                value={service.selectedConfig?.id}
+                value={service.selectedConfig?.name}
                 onChange={(e) => {
                   service.selectedConfig =
                     service.openAIConfigs.find(
-                      (v) => v.id === Number(e.target.value)
+                      (v) => v.name === e.target.value
                     ) || null;
                   setService({ service });
                 }}
               >
                 {service.openAIConfigs?.map((config) => (
-                  <option value={config.id} key={config.id}>
+                  <option value={config.name} key={config.name}>
                     {Util.beautifyCamelCase(config.name)}
                   </option>
                 ))}

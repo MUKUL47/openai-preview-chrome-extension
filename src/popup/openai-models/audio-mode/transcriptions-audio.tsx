@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
-import { OpenAIConfig } from "../../types";
-import { OpenAIUtil } from "../../utils";
-import useTabCaptureAudio from "../../utils/use-tabcapture-audio";
+import React, { useEffect, useRef } from "react";
+import { OpenAIConfig } from "../../../types";
+import { OpenAIUtil } from "../../../utils";
+import useTabCaptureAudio from "../../../utils/use-tabcapture-audio";
 interface Props
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
@@ -11,7 +11,7 @@ interface Props
 }
 export default function TranscriptionAudio({ config }: Props) {
   const transcriptionsRef = useRef<HTMLDivElement>(null);
-  const [clear] = useTabCaptureAudio<{
+  const [clear, start] = useTabCaptureAudio<{
     data: {
       text: string;
     };
@@ -22,7 +22,11 @@ export default function TranscriptionAudio({ config }: Props) {
       if (!transcriptionsRef.current) return;
       transcriptionsRef.current.innerHTML = transcripts.join(" ");
     },
+    audioInterval: 2200,
   });
+  useEffect(() => {
+    start();
+  }, []);
   function getApi(blob: Blob) {
     config.config["file"] = new File([blob], "audio.mp3", {
       type: "audio/mp3",

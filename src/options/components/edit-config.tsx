@@ -26,7 +26,7 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
   }
   const onResetOriginal = async () => {
     const originalconfigs = await OpenAIUtil.getConfigs(true);
-    const originalconfig = originalconfigs.find((v) => v.id === config.id);
+    const originalconfig = originalconfigs.find((v) => v.name === config.name);
     if (!originalconfig) return;
     await OpenAIUtil.updateConfigs(originalconfig);
     setConfig(transformEditConfig(originalconfig));
@@ -70,15 +70,6 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
   return (
     <form className="flex flex-col" onSubmit={onSubmit}>
       <div className="flex flex-col gap-3">
-        <InputWrapper label="Mode Name">
-          <input
-            required
-            {...getAndUpdate("name")}
-            type="text"
-            className={INPUT_CLASS}
-            placeholder={"Mode Name"}
-          />
-        </InputWrapper>
         <InputWrapper label="OpenAI Config">
           <div className="flex flex-col gap-2">
             <textarea
@@ -112,14 +103,6 @@ const EditConfig = ({ openAIConfig, onUpdate }: Props) => {
             placeholder="Font Size"
           />
         </InputWrapper>
-        {/* <InputWrapper label="Option Axios Config">
-          <a className="text-sm"></a>
-          <textarea
-            placeholder="Option Axios Config"
-            className={INPUT_CLASS}
-            {...getAndUpdate("axiosConfig")}
-          />
-        </InputWrapper> */}
       </div>
       <div className="flex gap-4 mt-3">
         <button disabled={updating}>

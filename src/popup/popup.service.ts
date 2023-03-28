@@ -1,9 +1,7 @@
 import { OpenAIConfig, OpenAIModeName } from "../types";
+import AudioMode from "./openai-models/audio-mode";
 import SelectedText from "./openai-models/selected-text";
-import SimpleQuery from "./openai-models/simple-query";
 import TextToImage from "./openai-models/text-to-image";
-import TranscriptionAudio from "./openai-models/transcriptions-audio";
-import TranslateAudioEn from "./openai-models/translate-audio-en";
 
 export default class PopupService {
   private static readonly POPUP_CHROME_EVENT_ID = `${Date.now()}-${Math.random()}`;
@@ -28,17 +26,14 @@ export default class PopupService {
   }
 
   public GetActiveMode(config: OpenAIConfig): Function | null {
-    switch (config?.id) {
-      case -1:
+    switch (config?.name) {
+      case OpenAIModeName.ANALYSE_SELECTED_TEXT:
         return SelectedText;
-      case -2:
+      case OpenAIModeName.TEXT_TO_IMAGE:
         return TextToImage;
-      case -3:
-        return TranscriptionAudio;
-      case -4:
-        return TranslateAudioEn;
-      case -5:
-        return SimpleQuery;
+      case OpenAIModeName.TRANSCRIPTIONS:
+      case OpenAIModeName.TRANSLATIONS:
+        return AudioMode;
       default:
         return null;
     }

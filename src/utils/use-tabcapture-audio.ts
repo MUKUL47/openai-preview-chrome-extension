@@ -3,15 +3,16 @@ interface Props<T extends any> {
   getApi: (blob: Blob) => Promise<T>;
   onUpdate?: (transcripts: string[]) => void;
   parseResponse: (r: T) => string;
+  audioInterval?: number;
 }
 let transcriptions: string[] = [];
-let STREAM: any = null;
-const AUDIO_INTERVAL = 1000;
+let AUDIO_INTERVAL = 1500;
 const MUTED_CHUNK = 1.75;
 const useTabCaptureAudio = <T>({
   getApi,
   onUpdate,
   parseResponse,
+  audioInterval,
 }: Props<T>) => {
   const intervalRef = useRef<number>(-1);
   const audioTimeoutref = useRef<number>(-1);
@@ -27,18 +28,15 @@ const useTabCaptureAudio = <T>({
   };
   useEffect(() => {
     transcriptions = [];
-    STREAM = null;
-    startRecording();
+    AUDIO_INTERVAL = audioInterval || 1500;
     return () => {
       clearInterval(intervalRef.current);
       clearTimeout(audioTimeoutref.current);
-      STREAM?.getTracks?.()?.forEach((track: any) => track?.stop?.());
     };
   }, []);
 
   const startRecording = () => {
     chrome.tabCapture.capture({ audio: true }, function (stream: any) {
-      STREAM = stream;
       const audioContext = new AudioContext();
       const source = audioContext.createMediaStreamSource(stream);
       let intervalCount = 0;
@@ -73,6 +71,8 @@ const useTabCaptureAudio = <T>({
       transcriptions = [];
       onUpdate?.(transcriptions);
     },
+    startRecording,
+    stop,
   ];
 };
 

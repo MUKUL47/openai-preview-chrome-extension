@@ -9,14 +9,12 @@ enum ChromeStorage {
   OPENAI_CONFIGS_ORIGINAL = "OPENAI_CONFIGS_ORIGINAL",
 }
 enum OpenAIModeName {
-  SIMPLE_QUERY = "SIMPLE_QUERY",
   ANALYSE_SELECTED_TEXT = "ANALYSE_SELECTED_TEXT",
   TEXT_TO_IMAGE = "TEXT_TO_IMAGE",
   TRANSCRIPTIONS = "TRANSCRIPTIONS",
   TRANSLATIONS = "TRANSLATIONS",
 }
 type OpenAIConfig = {
-  id: number;
   name: string;
   isDefault?: boolean;
   config: Record<string, any>;

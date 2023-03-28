@@ -10,10 +10,13 @@ interface Props
   config: OpenAIConfig;
 }
 function SelectedText({ config }: Props) {
-  const contextRef = useRef<HTMLInputElement>(null);
+  const contextRef = useRef<HTMLTextAreaElement>(null);
+  const checkboxRef = useRef<HTMLInputElement>(null);
   const { executeScript } = useChromeEvent<string>({
     onChromeResponse: analyse,
   });
+  const [checkbox, setCheckbox] = useState<boolean>(false);
+  const [textArea, setTextArea] = useState<string>("");
   const [openAIResponse, setOpenAIResponse] = useState<{
     error?: string;
     response?: string;
@@ -21,12 +24,13 @@ function SelectedText({ config }: Props) {
   const [isLoading, setLoading] = useState<boolean>(false);
 
   async function analyse(s: string) {
-    if (typeof s !== "string" || !!!s) {
-      throw "No text selected...";
-    }
     try {
+      const isChecked = checkboxRef.current?.checked;
+      if (isChecked && s.trim().length === 0) throw "No selected text found";
       const c = config.config;
-      c.prompt = `${contextRef.current?.value}\n"${s}"`;
+      c.prompt =
+        (!!isChecked && `${contextRef.current?.value}\n"${s}"`) ||
+        contextRef.current?.value;
       const completion = await OpenAIUtil.getOpenAIAPI<any>(
         OpenAIUtil.getAxiosConfig(config)
       );
@@ -59,15 +63,30 @@ function SelectedText({ config }: Props) {
   return (
     <>
       <div className="context flex gap-2 items-center">
-        <p>Context</p>
-        <input
-          type="text"
-          placeholder="Please translate it to spanish"
+        <textarea
+          placeholder={
+            checkbox
+              ? "Please translate it to spanish"
+              : "Tell me creative birthday ideas!"
+          }
           ref={contextRef}
+          value={textArea}
+          onChange={(e) => setTextArea(e.target.value)}
           className="flex-1 pl-2 rounded-sm"
         />
       </div>
-      <button onClick={onAnalyse}>Analyse Selected Text</button>
+      <div className="flex gap-2 items-center">
+        <label>Consider Selected Text</label>
+        <input
+          type="checkbox"
+          ref={checkboxRef}
+          checked={checkbox}
+          onChange={(e) => setCheckbox(e.target.checked)}
+        />
+      </div>
+      <button onClick={onAnalyse} disabled={textArea.trim().length === 0}>
+        Submit
+      </button>
       {openAIResponse.error && (
         <p className="text-red-700 text-center">
           <strong>{openAIResponse.error}</strong>
@@ -81,7 +100,6 @@ function SelectedText({ config }: Props) {
           {openAIResponse.response}
         </CopyToClipboardPWrapper>
       )}
-      <p></p>
     </>
   );
 }
